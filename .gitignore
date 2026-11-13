@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Production
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.cache/
+
+# Deno (edge functions 로컬 테스트)
+deno.lock
+
+# Supabase CLI 임시 파일
+supabase/.temp/
+
+# 다른 AI 도구 생성 파일 (로컬 전용)
+AGENTS.md
+
+# Superpowers 브레인스토밍 시각 도구 산출물
+.superpowers/
+public/__fixture-*.json

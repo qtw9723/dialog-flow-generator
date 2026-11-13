@@ -1,0 +1,84 @@
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useApi } from './useApi'
+import { API_ENDPOINTS } from '../lib/constants'
+
+export function useQuestions() {
+  const [questions, setQuestions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const { request } = useApi()
+  const hasLoadedRef = useRef(false)
+
+  // Debug: Track how many times this hook is instantiated
+  const instanceId = useRef(Math.random()).current
+  console.log(`[useQuestions] Hook instantiated #${instanceId.toString().slice(2, 6)}, hasLoaded=${hasLoadedRef.current}`)
+
+  const fetchQuestions = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await request(API_ENDPOINTS.ADMIN_QUESTIONS)
+      setQuestions(data)
+      setError(null)
+    } catch (err) {
+      console.error('Failed to fetch questions:', err)
+      setError(err.message)
+      setQuestions([])
+    } finally {
+      setLoading(false)
+    }
+  }, [request])
+
+  useEffect(() => {
+    // Prevent multiple calls using ref - ensure this runs only once
+    if (hasLoadedRef.current) return
+    hasLoadedRef.current = true
+
+    console.log('[useQuestions] Fetching questions...')
+
+    // Create inline async function to avoid dependency issues
+    const load = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await request(API_ENDPOINTS.ADMIN_QUESTIONS)
+        setQuestions(data)
+      } catch (err) {
+        console.error('Failed to fetch questions:', err)
+        setError(err.message)
+        setQuestions([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
+  }, [])
+
+  const createQuestion = async (question) => {
+    const data = await request(API_ENDPOINTS.ADMIN_QUESTIONS, {
+      method: 'POST',
+      body: question
+    })
+    setQuestions([...questions, data])
+    return data
+  }
+
+  const updateQuestion = async (id, updates) => {
+    const data = await request(`${API_ENDPOINTS.ADMIN_QUESTIONS}?id=${id}`, {
+      method: 'PATCH',
+      body: updates
+    })
+    setQuestions(questions.map(q => q.id === id ? data : q))
+    return data
+  }
+
+  const deleteQuestion = async (id) => {
+    await request(`${API_ENDPOINTS.ADMIN_QUESTIONS}?id=${id}`, {
+      method: 'DELETE'
+    })
+    setQuestions(questions.filter(q => q.id !== id))
+  }
+
+  return { questions, loading, error, createQuestion, updateQuestion, deleteQuestion, refetch: fetchQuestions }
+}

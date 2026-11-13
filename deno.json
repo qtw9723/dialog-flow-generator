@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window", "dom", "dom.iterable", "esnext"]
+  },
+  "tasks": {
+    "test": "deno test --allow-env --allow-net supabase/functions/test/rules.test.ts"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/"
+  }
+}

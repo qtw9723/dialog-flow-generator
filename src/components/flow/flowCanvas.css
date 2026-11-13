@@ -1,0 +1,26 @@
+/* FlowCanvas 편집 모드 — 선택된 엣지 강조.
+   엣지 path에 인라인 stroke(색·굵기)가 있어 CSS로 이기려면 !important가 필요하다.
+   기본 smoothstep 엣지와 커스텀 엣지(BranchEdge·WaitEdge, BaseEdge 사용) 모두
+   .react-flow__edge-path를 그리므로 한 규칙으로 커버된다. */
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-primary-500) !important;
+  stroke-width: 3 !important;
+}
+
+/* 선택 엣지를 앞으로 끌어올려 다른 엣지에 가리지 않게 */
+.react-flow__edge.selected {
+  z-index: 10 !important;
+}
+
+/* 마우스 오버 시에도 클릭 가능한 엣지임을 살짝 알림(편집 모드에서 커서 포인터) */
+.react-flow__edge.selectable:hover .react-flow__edge-path {
+  stroke-width: 2.5;
+  cursor: pointer;
+}
+
+/* 노드 선택 강조는 도형 자체(ShapeBg의 selected)로 처리한다.
+   ReactFlow 기본 사각형 box-shadow는 도형(다이아몬드·육각형 등)과 어긋나므로 제거. */
+.react-flow__node.selected {
+  box-shadow: none !important;
+  z-index: 10 !important;
+}
