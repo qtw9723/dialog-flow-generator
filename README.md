@@ -53,6 +53,10 @@ deno run --allow-write --allow-read demo/run-demo.ts && python3 demo/build-page.
 
 `--allow-env`가 빠지면 YAML 파싱이 조용히 실패해 무관한 테스트가 오답을 낼 수 있습니다.
 
+## 배포 메모
+
+- 앱 배포용 Vercel 설정은 `vercel.app.json`이다(앱을 Vercel에 올릴 때 `vercel.json`으로 복사). 저장소 루트에 `vercel.json`을 두지 않는 이유는 `web/`(정적 데모)를 같은 저장소에서 따로 배포하기 때문이다.
+
 ## 라이선스
 
 MIT
