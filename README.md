@@ -60,3 +60,6 @@ deno run --allow-write --allow-read demo/run-demo.ts && python3 demo/build-page.
 ## 라이선스
 
 MIT
+
+## 데모 (실제 앱 화면)
+`npm run build:demo`는 `VITE_DEMO=true`로 앱을 빌드해 `web/`에 넣습니다. 서버 대신 `src/demo/demoBackend.js`가 브라우저 안에서 `/functions/v1/*` 호출에 답하며, 생성 결과는 `demo/run-demo.ts`가 실제 검증·보정·확장 코드를 실행해 기록한 `demo/recorded/bot.json`입니다. LLM 호출 자리만 스크립트 응답이고 실운영이 아닙니다. 이전의 실행 기록 재생 페이지는 `web/replay.html`입니다.

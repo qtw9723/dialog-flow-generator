@@ -1,0 +1,304 @@
+{
+ "bot": {
+  "id": "generated-id",
+  "name": "택배 반품 접수",
+  "dialogs": [
+   {
+    "id": "predialog",
+    "name": "Pre Dialog",
+    "body": [],
+    "then": [],
+    "nodes": [],
+    "config": {}
+   },
+   {
+    "id": "main",
+    "name": "Main Dialog",
+    "then": [
+     "n1",
+     "_greeting",
+     "fallback"
+    ],
+    "nodes": [
+     {
+      "id": "_greeting",
+      "type": "greeting",
+      "label": "환영 인사",
+      "config": {},
+      "then": [
+       "_greeting_out"
+      ]
+     },
+     {
+      "id": "_greeting_out",
+      "type": "output",
+      "label": "환영 인사와 봇 소개·이용 안내",
+      "config": {
+       "items": [
+        {
+         "type": "text",
+         "text": "환영 인사와 봇 소개·이용 안내"
+        }
+       ],
+       "hideInput": false
+      },
+      "then": []
+     },
+     {
+      "id": "n1",
+      "type": "input",
+      "label": "운송장 번호 입력",
+      "config": {
+       "variable": "n1_value",
+       "prompt": "운송장 번호 입력"
+      },
+      "then": [
+       "n2"
+      ]
+     },
+     {
+      "id": "n2",
+      "type": "api",
+      "label": "반품 가능 여부 조회",
+      "config": {
+       "url": "/api/n2",
+       "method": "POST"
+      },
+      "then": [
+       "n3__init"
+      ]
+     },
+     {
+      "id": "n3",
+      "type": "subflow",
+      "label": "반품 사유 재시도",
+      "condition": "",
+      "config": {
+       "loop": {
+        "condition": "reason_ok",
+        "count": "3"
+       }
+      },
+      "body": [
+       "n4"
+      ],
+      "then": [
+       "n5"
+      ],
+      "actions": []
+     },
+     {
+      "id": "n4",
+      "type": "input",
+      "label": "반품 사유 입력",
+      "config": {
+       "variable": "n4_value",
+       "prompt": "반품 사유 입력"
+      },
+      "then": [
+       "n4b"
+      ]
+     },
+     {
+      "id": "n4b",
+      "type": "set",
+      "label": "사유 확인 완료 표시",
+      "config": {
+       "variable": "n4b",
+       "value": ""
+      },
+      "then": []
+     },
+     {
+      "id": "n5",
+      "type": "output",
+      "label": "접수 완료 안내",
+      "config": {
+       "items": [
+        {
+         "type": "text",
+         "text": "접수 완료 안내"
+        }
+       ],
+       "hideInput": false
+      },
+      "then": []
+     },
+     {
+      "id": "n3__init",
+      "type": "set",
+      "label": "reason_ok 초기화",
+      "condition": "",
+      "config": {
+       "items": [
+        {
+         "key": "reason_ok",
+         "value": "false",
+         "condition": ""
+        }
+       ]
+      },
+      "then": [
+       "n3"
+      ],
+      "actions": []
+     },
+     {
+      "id": "fallback",
+      "type": "fallback",
+      "label": "Fallback",
+      "body": [],
+      "then": [
+       "fallback_out"
+      ],
+      "actions": []
+     },
+     {
+      "id": "fallback_out",
+      "type": "output",
+      "label": "안내",
+      "condition": "",
+      "body": [],
+      "then": [],
+      "config": {
+       "items": [
+        {
+         "type": "text",
+         "condition": "",
+         "channels": [
+          {
+           "name": "Web",
+           "use": true
+          }
+         ],
+         "text": [
+          {
+           "condition": "",
+           "texts": [
+            "잘 못 알아들었어요!"
+           ]
+          }
+         ]
+        }
+       ],
+       "waitInput": false,
+       "hideInput": false
+      }
+     }
+    ]
+   },
+   {
+    "id": "postdialog",
+    "name": "Post Dialog",
+    "body": [],
+    "then": [
+     "error"
+    ],
+    "config": {},
+    "nodes": [
+     {
+      "id": "error",
+      "type": "output",
+      "label": "에러 메시지",
+      "condition": "_error",
+      "config": {
+       "items": [
+        {
+         "type": "text",
+         "condition": "",
+         "channels": [
+          {
+           "name": "Web",
+           "use": true
+          }
+         ],
+         "text": [
+          {
+           "condition": "",
+           "texts": [
+            "에러가 발생했습니다.\n- ${_error}"
+           ]
+          }
+         ]
+        }
+       ],
+       "waitInput": false,
+       "hideInput": false
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "flow": {
+  "version": "1",
+  "entry": "n1",
+  "nodes": [
+   {
+    "id": "_greeting",
+    "type": "greeting",
+    "intent": "환영 인사",
+    "next": [
+     "_greeting_out"
+    ]
+   },
+   {
+    "id": "_greeting_out",
+    "type": "output",
+    "intent": "환영 인사와 봇 소개·이용 안내",
+    "next": []
+   },
+   {
+    "id": "n1",
+    "type": "input",
+    "intent": "운송장 번호 입력",
+    "next": [
+     "n2"
+    ]
+   },
+   {
+    "id": "n2",
+    "type": "api",
+    "intent": "반품 가능 여부 조회",
+    "next": [
+     "n3"
+    ]
+   },
+   {
+    "id": "n3",
+    "type": "loop",
+    "intent": "반품 사유 재시도",
+    "next": [
+     "n5"
+    ],
+    "loop": {
+     "body": [
+      "n4"
+     ],
+     "exitVar": "reason_ok",
+     "max": 3
+    }
+   },
+   {
+    "id": "n4",
+    "type": "input",
+    "intent": "반품 사유 입력",
+    "next": [
+     "n4b"
+    ]
+   },
+   {
+    "id": "n4b",
+    "type": "set",
+    "intent": "사유 확인 완료 표시",
+    "next": []
+   },
+   {
+    "id": "n5",
+    "type": "output",
+    "intent": "접수 완료 안내",
+    "next": []
+   }
+  ]
+ }
+}

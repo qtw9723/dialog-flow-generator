@@ -1,0 +1,1 @@
+{ "rewrites": [ { "source": "/((?!replay\\.html|assets/).*)", "destination": "/index.html" } ] }

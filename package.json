@@ -9,7 +9,8 @@
     "prebuild": "node scripts/ensure-deps.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .jsx,.js"
+    "lint": "eslint . --ext .jsx,.js",
+    "build:demo": "VITE_DEMO=true VITE_SUPABASE_URL=https://demo.invalid VITE_SUPABASE_ANON_KEY=demo vite build --outDir /tmp/dfg-dist && cp -r /tmp/dfg-dist/* web/"
   },
   "keywords": [],
   "author": "",

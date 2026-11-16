@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""demo/recorded/run.json(= deno run demo/run-demo.ts 결과)을 정적 인포그래픽 web/index.html로 만든다."""
+"""demo/recorded/run.json(= deno run demo/run-demo.ts 결과)을 정적 인포그래픽 web/replay.html로 만든다."""
 import html, json, pathlib, re, sys
 root = pathlib.Path(__file__).resolve().parent.parent
 r = json.loads((root / "demo/recorded/run.json").read_text(encoding="utf-8"))
@@ -36,7 +36,7 @@ checks = ["미지의 노드 종류를 제거","끊긴 next 참조를 제거","�
 checks_html = "".join(f'<li><span class="res">PASS</span>{e(c)}</li>' for c in checks)
 raw = e(json.dumps(r, ensure_ascii=False, indent=1))
 
-css = pathlib.Path("/home/claude/olympus-public/web/index.html").read_text(encoding="utf-8")
+css = pathlib.Path("/home/claude/olympus-public/web/replay.html").read_text(encoding="utf-8")
 css = re.search(r"<style>(.*?)</style>", css, re.S).group(1)
 css += ".diff{max-height:none}.exit code{white-space:nowrap}.vs.three{grid-template-columns:repeat(3,minmax(0,1fr))}.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:0 0 16px}.facts div{border:1.5px solid var(--rule);padding:12px 14px;font-size:14px;color:var(--muted)}.facts b{display:block;font-size:30px;line-height:1.2;color:var(--ink)}@media (max-width:820px){.vs.three{grid-template-columns:1fr}}"
 
@@ -90,6 +90,6 @@ page = f"""<!DOCTYPE html>
 </body>
 </html>
 """
-out = root / "web/index.html"
+out = root / "web/replay.html"
 out.write_text(page, encoding="utf-8")
 print("wrote", out, len(page), "bytes")

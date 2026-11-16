@@ -99,6 +99,7 @@ if (!v1.valid || v1b.valid || !v2.valid || !v3.valid || dangling.length) {
   }
 }
 await Deno.mkdir("demo/recorded", { recursive: true })
+await Deno.writeTextFile("demo/recorded/bot.json", JSON.stringify({ bot: out, flow: g.flow }, null, 1))
 await Deno.writeTextFile("demo/recorded/run.json", JSON.stringify(rec, null, 1))
 console.log("데모 통과 — demo/recorded/run.json")
 console.log(JSON.stringify({ v1: v1.errors, afterRepair: v1b.errors, v2: v2.valid, expand: rec.expand && (rec.expand as any).typeCount }, null, 1))
