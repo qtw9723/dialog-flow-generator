@@ -3,6 +3,7 @@
 // 생성 결과는 실제 파이프라인의 결정론 구간(검증·보정·확장)을 실행해 기록한 demo/recorded/bot.json이다.
 // LLM 호출 자리(자연어 분석·플로우 설계)만 스크립트된 응답으로 대신한다 — 실운영이 아니다.
 import recorded from '../../demo/recorded/bot.json'
+import run from '../../demo/recorded/run.json'
 
 const DEMO = import.meta.env.VITE_DEMO === 'true'
 const DEMO_USER = { id: 'demo-user', email: 'demo@example.com' }
@@ -55,6 +56,38 @@ const state = { results: DEMO ? [makeResult('demo-0001-return', '택배 반품 �
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json' } })
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
+
+// 생성 중에 실제 파이프라인 기록(demo/recorded/run.json)을 단계별로 보여준다.
+// 오류 문구·노드 수는 실제 검증·보정·확장 코드가 낸 값이다. LLM 단계는 스크립트 응답.
+async function playPipeline() {
+  const v1 = run.validate1.errors, v2 = run.repair.after.errors
+  const steps = [
+    ['LLM', `플로우 설계 — 노드 ${run.design1.length}개`],
+    ['코드', `검증 1차 — 오류 ${v1.length}건: ${v1.map((e) => e.replace(/"/g, '')).join(' / ')}`],
+    ['코드', `자동 보정 — 미지의 노드 ${run.repair.removed.join(', ')} 제거, 끊긴 참조 정리`],
+    ['코드', `재검증 — ${v2.length}건 남음: ${v2[0].replace(/"/g, '')}`],
+    ['LLM', `설계 되돌림 — 오류를 알려 재설계 (노드 ${run.design2.length}개)`],
+    ['코드', '재검증 — 통과'],
+    ['코드', `인사 노드 주입 — ${run.greeting.ids.join(', ')}`],
+    ['코드', `노드 확장 — ${run.design2.length + 2}개 → ${run.expand.nodes}개 (LLM 호출 0회)`],
+  ]
+  const box = document.createElement('div')
+  box.setAttribute('style', 'position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;font:14px/1.5 system-ui,sans-serif')
+  box.innerHTML = '<div style="background:#fff;border-radius:14px;padding:22px 24px;width:min(560px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.3)"><div style="font-weight:700;font-size:16px;margin-bottom:4px">챗봇 생성 중</div><div style="color:#64748b;font-size:12px;margin-bottom:14px">실제 검증·보정·확장 코드가 낸 기록입니다 (LLM 단계는 스크립트)</div><div id="demo-steps"></div></div>'
+  document.body.appendChild(box)
+  const list = box.querySelector('#demo-steps')
+  for (const [kind, text] of steps) {
+    const row = document.createElement('div')
+    row.setAttribute('style', 'display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid #eef0f4')
+    const llm = kind === 'LLM'
+    row.innerHTML = `<span style="flex:none;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;${llm ? 'background:#2B3FF0;color:#fff' : 'border:1px solid #2B3FF0;color:#2B3FF0'}">${kind}</span><span>${text}</span>`
+    list.appendChild(row)
+    await sleep(kind === 'LLM' ? 1100 : 800)
+  }
+  await sleep(500)
+  box.remove()
+}
+
 async function handle(fn, url, method, body) {
   const id = url.searchParams.get('id')
   switch (fn) {
@@ -70,7 +103,7 @@ async function handle(fn, url, method, body) {
       await sleep(1400)
       return json({ botName: '택배 반품 접수 챗봇', scenarios: [{ name: '반품 접수', trigger: '반품하고 싶어요', done: '반품 접수가 완료되었습니다.', collect: ['운송장 번호', '반품 사유'], integrations: [] }] })
     case 'dialogflow-generator': {
-      await sleep(2600)
+      await playPipeline()
       const name = (body && Object.values(body.responses || {}).find((v) => typeof v === 'string')) || '택배 반품 접수 챗봇'
       const r = makeResult('demo-' + Date.now().toString(36), name, 0)
       state.results.unshift(r)
@@ -92,6 +125,6 @@ if (DEMO && typeof window !== 'undefined' && !window.__demoInstalled) {
   }
   const band = document.createElement('div')
   band.setAttribute('style', 'position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#2B3FF0;color:#fff;padding:7px 14px;font:13px/1.4 system-ui,sans-serif;display:flex;gap:14px;flex-wrap:wrap;align-items:center')
-  band.innerHTML = '<b>실운영 아님 · 데모</b><span>실제 앱 화면입니다. LLM 호출 자리만 스크립트 응답이며, 데이터는 이 브라우저 안에만 있습니다.</span><span style="margin-left:auto;display:flex;gap:14px"><a href="/replay.html" style="color:#fff">실행 기록 재생</a><a href="https://github.com/qtw9723/dialog-flow-generator" style="color:#fff">소스</a></span>'
+  band.innerHTML = '<b>실운영 아님 · 데모</b><span>실제 앱 화면입니다. LLM 호출 자리만 스크립트 응답이며, 데이터는 이 브라우저 안에만 있습니다.</span><span style="margin-left:auto;display:flex;gap:14px"><a href="https://github.com/qtw9723/dialog-flow-generator" style="color:#fff">소스</a></span>'
   document.addEventListener('DOMContentLoaded', () => { document.body.appendChild(band); document.body.style.paddingBottom = '40px' })
 }

@@ -33,7 +33,7 @@ src/                                   프론트 (화면, 흐름 편집기, 순�
 supabase/functions/dialogflow-generator/flow/   생성 파이프라인 (설계·검증·확장·안전장치)
 supabase/functions/_shared/            LLM 호출·공통 유틸
 supabase/migrations/                   스키마와 규칙 시드
-demo/                                  결정론 구간 실행 기록 생성 (run-demo.ts, build-page.py)
+demo/                                  결정론 구간 실행 기록 생성 (run-demo.ts)
 web/                                   데모 정적 페이지
 ```
 
@@ -48,7 +48,7 @@ npm run dev
 ```sh
 deno test --allow-read --allow-env src/lib/
 deno test --allow-read --allow-env supabase/functions/dialogflow-generator/
-deno run --allow-write --allow-read demo/run-demo.ts && python3 demo/build-page.py   # 데모 재생성
+deno run --allow-write --allow-read demo/run-demo.ts   # 기록 재생성 후 npm run build:demo
 ```
 
 `--allow-env`가 빠지면 YAML 파싱이 조용히 실패해 무관한 테스트가 오답을 낼 수 있습니다.
@@ -62,4 +62,4 @@ deno run --allow-write --allow-read demo/run-demo.ts && python3 demo/build-page.
 MIT
 
 ## 데모 (실제 앱 화면)
-`npm run build:demo`는 `VITE_DEMO=true`로 앱을 빌드해 `web/`에 넣습니다. 서버 대신 `src/demo/demoBackend.js`가 브라우저 안에서 `/functions/v1/*` 호출에 답하며, 생성 결과는 `demo/run-demo.ts`가 실제 검증·보정·확장 코드를 실행해 기록한 `demo/recorded/bot.json`입니다. LLM 호출 자리만 스크립트 응답이고 실운영이 아닙니다. 이전의 실행 기록 재생 페이지는 `web/replay.html`입니다.
+`npm run build:demo`는 `VITE_DEMO=true`로 앱을 빌드해 `web/`에 넣습니다. 서버 대신 `src/demo/demoBackend.js`가 브라우저 안에서 `/functions/v1/*` 호출에 답하며, 생성 결과는 `demo/run-demo.ts`가 실제 검증·보정·확장 코드를 실행해 기록한 `demo/recorded/bot.json`입니다. LLM 호출 자리만 스크립트 응답이고 실운영이 아닙니다.
